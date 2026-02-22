@@ -7,6 +7,8 @@ function LoginPage({ setPageStatus }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setProfile } = useContext(ProfileContext);
+  const [warningStatus, setWarningStatus] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
 
   function handleEmailChange(e) {
     setEmail(e.target.value);
@@ -17,13 +19,18 @@ function LoginPage({ setPageStatus }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
+    if (!password || !email) {
+      setWarningStatus(true);
+      setWarningMessage("Please fill in all fields.");
+      return;
+    }
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
-      alert(error.message);
+      setWarningStatus(true);
+      setWarningMessage(error.message);
     } else {
       console.log("User logged in:", data);
       setProfile(data.user);
@@ -45,7 +52,11 @@ function LoginPage({ setPageStatus }) {
           <label htmlFor="password">Password</label>
           <input type="password" onChange={handlePasswordChange} required />
         </div>
-
+        {warningStatus && (
+          <p style={{ color: "red" }} className="error">
+            {warningMessage}
+          </p>
+        )}
         <button
           onClick={(e) => {
             handleSubmit(e);

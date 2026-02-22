@@ -7,6 +7,8 @@ function SignInPage({ setPageStatus }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setProfile } = useContext(ProfileContext);
+  const [warningMessage, setWarningMessage] = useState("");
+  const [warningStatus, setWarningStatus] = useState(false);
 
   function handleEmailChange(e) {
     setEmail(e.target.value);
@@ -17,6 +19,11 @@ function SignInPage({ setPageStatus }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!password || !email) {
+      setWarningStatus(true);
+      setWarningMessage("Please fill in all fields.");
+      return;
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -25,7 +32,8 @@ function SignInPage({ setPageStatus }) {
     const user = data.user;
 
     if (error) {
-      alert(error.message);
+      setWarningMessage(error.message);
+      setWarningStatus(true);
     } else {
       const { data: signInData, error: signInError } = await supabase
         .from("userProfile")
@@ -34,6 +42,7 @@ function SignInPage({ setPageStatus }) {
       console.log("User signed up:", data);
       setProfile(data.user);
       setPageStatus("home");
+      setWarningStatus(false);
     }
   }
 
@@ -51,7 +60,16 @@ function SignInPage({ setPageStatus }) {
           <label htmlFor="password">Password</label>
           <input type="password" onChange={handlePasswordChange} required />
         </div>
-
+        {warningStatus && (
+          <p style={{ color: "red" }} className="error">
+            Please fill in all fields.
+          </p>
+        )}
+        {password.length > 0 && password.length < 8 && (
+          <p style={{ color: "red" }} className="error">
+            Password must be at least 8 characters long.
+          </p>
+        )}
         <button
           onClick={(e) => {
             handleSubmit(e);
