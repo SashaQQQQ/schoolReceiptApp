@@ -62,7 +62,7 @@ function SignInPage({ setPageStatus }) {
         </div>
         {warningStatus && (
           <p style={{ color: "red" }} className="error">
-            Please fill in all fields.
+            {warningMessage}
           </p>
         )}
         {password.length > 0 && password.length < 8 && (
