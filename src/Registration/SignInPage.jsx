@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import supabase from "../SupabaseClient.js";
-import "./LoginPage.css";
+import "./LogInPage.css";
 import { ProfileContext } from "../ProfileContext.js";
 
 function SignInPage({ setPageStatus }) {
